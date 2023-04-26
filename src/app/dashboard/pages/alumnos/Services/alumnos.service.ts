@@ -130,65 +130,43 @@ export class AlumnosService {
   }
 
   crearAlumno(nuevoAlumno: Alumno) {
-    // this.estudiantes$ = new BehaviorSubject<Alumno[]>([
-    //   { ...nuevoAlumno, fechaDeAlta: new Date() },
-    //   ...this.estudiantes$.value,
-    // ]);
-
-    this.estudiantes$
-    .pipe(
-      take(1)
-    )
-    .subscribe({
+    this.estudiantes$.pipe(take(1)).subscribe({
       next: (alumnos) => {
-        this.estudiantes$.next([         
-          nuevoAlumno
-          ,
-          ...alumnos,
-        ]);
+        this.estudiantes$.next([nuevoAlumno, ...alumnos]);
       },
     });
   }
 
   eliminarAlumno(alumnoAEliminar: Alumno) {
-    // this.estudiantes$ = new BehaviorSubject<Alumno[]>([
-    //   ...this.estudiantes$.value.filter(
-    //     (alumno) => alumno.numeroDocumento != alumnoAEliminar.numeroDocumento
-    //   ),
-    // ]);
-
-    this.estudiantes$
-    .pipe(
-      take(1)
-    )
-    .subscribe({
+    this.estudiantes$.pipe(take(1)).subscribe({
       next: (alumnos) => {
-        const calumnosActualizados = alumnos.filter((alumno) => alumno.numeroDocumento !== alumnoAEliminar.numeroDocumento)
+        const calumnosActualizados = alumnos.filter(
+          (alumno) => alumno.numeroDocumento !== alumnoAEliminar.numeroDocumento
+        );
         this.estudiantes$.next(calumnosActualizados);
       },
     });
   }
-  editarAlumno(alumnoId: number, actualizacion: Partial<Alumno>): Observable<Alumno[]> {
-    this.estudiantes$
-      .pipe(
-        take(1),
-      )
-       .subscribe({
-         next: (alumnos) => {
-           const alumnoActualizados = alumnos.map((alumno) => {
-             if (alumno.numeroDocumento === alumnoId) {
-               return {
-                 ...alumno,
-                 ...actualizacion,
-               }
-             } else {
-               return alumno;
-             }
-           })
+  editarAlumno(
+    alumnoId: number,
+    actualizacion: Partial<Alumno>
+  ): Observable<Alumno[]> {
+    this.estudiantes$.pipe(take(1)).subscribe({
+      next: (alumnos) => {
+        const alumnoActualizados = alumnos.map((alumno) => {
+          if (alumno.numeroDocumento === alumnoId) {
+            return {
+              ...alumno,
+              ...actualizacion,
+            };
+          } else {
+            return alumno;
+          }
+        });
 
-           this.estudiantes$.next(alumnoActualizados);
-         },
-       });  
-       return this.estudiantes$.asObservable();
-      }  
+        this.estudiantes$.next(alumnoActualizados);
+      },
+    });
+    return this.estudiantes$.asObservable();
+  }
 }

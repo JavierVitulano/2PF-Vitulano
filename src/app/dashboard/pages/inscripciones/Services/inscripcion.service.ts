@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Inscripcion } from '../inscripciones.component';
 import { BehaviorSubject, Observable, map, take } from 'rxjs';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -238,9 +237,9 @@ export class InscripcionService {
 
   obtenerAlumnosPorCurso(idCurso: number): Observable<Inscripcion[]> {
     // return this.inscripcion$.asObservable()
-    //   .pipe(
-    //     map((inscripcion) => inscripcion.find((a) => a.idCurso === idCurso))
-    //   )
+    // .pipe(
+    //   map((inscripcion) => inscripcion.find((c) => c.idCurso === idCurso))
+    // )
 
     return this.obtenerAlumnos();
   }
@@ -265,45 +264,24 @@ export class InscripcionService {
     //return this.cursosService.obtenerCursoPorId('1');
   }
   inscribirAlumno(nuevaInscripcion: Inscripcion) {
-    // this.inscripcion$ = new BehaviorSubject<Inscripcion[]>([
-    //   { ...nuevaInscripcion },
-    //   ...this.inscripcion$.value,
-    // ]);
-
-    this.inscripcion$
-    .pipe(
-      take(1)
-    )
-    .subscribe({
+    this.inscripcion$.pipe(take(1)).subscribe({
       next: (inscripciones) => {
-        this.inscripcion$.next([         
-          nuevaInscripcion
-          ,
-          ...inscripciones,
-        ]);
+        this.inscripcion$.next([nuevaInscripcion, ...inscripciones]);
       },
     });
   }
 
   eliminarInscripcion(inscripcionAEliminar: Inscripcion) {
-    // this.inscripcion$ = new BehaviorSubject<Inscripcion[]>([
-    //   ...this.inscripcion$.value.filter(
-    //     (inscripcion) => inscripcion.numeroDocumentoAlumno != inscripcionAEliminar.numeroDocumentoAlumno
-    //     && inscripcion.idCurso !=inscripcionAEliminar.idCurso
-    //   ),
-    // ]);
-
-    this.inscripcion$
-    .pipe(
-      take(1)
-    )
-    .subscribe({
+    this.inscripcion$.pipe(take(1)).subscribe({
       next: (alumnos) => {
-        const calumnosActualizados = alumnos.filter((inscripcion) => inscripcion.numeroDocumentoAlumno != inscripcionAEliminar.numeroDocumentoAlumno
-        && inscripcion.idCurso !=inscripcionAEliminar.idCurso)
+        const calumnosActualizados = alumnos.filter(
+          (inscripcion) =>
+            inscripcion.numeroDocumentoAlumno !=
+              inscripcionAEliminar.numeroDocumentoAlumno &&
+            inscripcion.idCurso != inscripcionAEliminar.idCurso
+        );
         this.inscripcion$.next(calumnosActualizados);
       },
     });
   }
- 
 }

@@ -87,62 +87,52 @@ export class CursosService {
   }
 
   eliminarCurso(cursoAEliminar: Curso) {
-    this.cursos$
-    .pipe(
-      take(1)
-    )
-    .subscribe({
+    this.cursos$.pipe(take(1)).subscribe({
       next: (cursos) => {
-        const calumnosActualizados = cursos.filter((curso) => curso.id != cursoAEliminar.id
-        )
+        const calumnosActualizados = cursos.filter(
+          (curso) => curso.id != cursoAEliminar.id
+        );
         this.cursos$.next(calumnosActualizados);
       },
     });
   }
   crearCurso(nuevoCurso: Curso) {
-    this.cursos$
-    .pipe(
-      take(1)
-    )
-    .subscribe({
+    this.cursos$.pipe(take(1)).subscribe({
       next: (cursos) => {
-        this.cursos$.next([         
+        this.cursos$.next([
           {
             id: cursos.length + 1,
             nombreCurso: nuevoCurso.nombreCurso,
             fechaInicio: nuevoCurso.fechaInicio,
-            fechaFin: nuevoCurso.fechaFin
+            fechaFin: nuevoCurso.fechaFin,
           },
           ...cursos,
         ]);
       },
       complete: () => {},
-      error: () => {}
+      error: () => {},
     });
-
   }
-  editarCurso(cursoId: number, actualizacion: Partial<Curso>): Observable<Curso[]> {
-    this.cursos$
-      .pipe(
-        take(1),
-      )
-       .subscribe({
-         next: (cursos) => {
-           const cursosActualizados = cursos.map((curso) => {
-             if (curso.id === cursoId) {
-               return {
-                 ...curso,
-                 ...actualizacion,
-               }
-             } else {
-               return curso;
-             }
-           })
+  editarCurso(
+    cursoId: number,
+    actualizacion: Partial<Curso>
+  ): Observable<Curso[]> {
+    this.cursos$.pipe(take(1)).subscribe({
+      next: (cursos) => {
+        const cursosActualizados = cursos.map((curso) => {
+          if (curso.id === cursoId) {
+            return {
+              ...curso,
+              ...actualizacion,
+            };
+          } else {
+            return curso;
+          }
+        });
 
-           this.cursos$.next(cursosActualizados);
-         },
-       });  
-       return this.cursos$.asObservable();
-      }
-      
+        this.cursos$.next(cursosActualizados);
+      },
+    });
+    return this.cursos$.asObservable();
+  }
 }

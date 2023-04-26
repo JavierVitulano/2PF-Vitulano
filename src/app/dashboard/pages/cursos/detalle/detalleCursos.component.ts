@@ -23,8 +23,8 @@ export class DetalleCursosComponent {
     'opcionesDelete',
   ];
   curso: Curso | undefined;
-  dataSource = new MatTableDataSource<Inscripcion>();
-
+  dataSource = new MatTableDataSource<Inscripcion>;
+  //inscripcion: Inscripcion;
   private destroyed$ = new Subject();
 
   nombreCursoControl = new FormControl();
@@ -42,15 +42,13 @@ export class DetalleCursosComponent {
       .obtenerCursoPorId(parseInt(this.activatedRoute.snapshot.params['id']))
       .pipe(takeUntil(this.destroyed$))
       .subscribe((curso) => (this.curso = curso));
+      if (this.curso){
     this.nombreCursoControl.setValue(this.curso?.nombreCurso);
-
-    if (this.curso) {
-      this.inscripcionService
-        .obtenerAlumnosPorCurso(this.curso.id)
-        .subscribe((inscripciones) => {
-          this.dataSource.data = inscripciones;
-        });
-    }
+     this.inscripcionService
+    .obtenerAlumnosPorCurso(this.curso.id)
+    .subscribe((inscripciones) => {
+      this.dataSource.data = inscripciones;
+    });}
   }
 
   ngOnDestroy(): void {
