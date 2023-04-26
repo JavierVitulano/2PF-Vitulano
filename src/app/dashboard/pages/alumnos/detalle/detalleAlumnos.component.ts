@@ -82,11 +82,12 @@ export class DetalleAlumnosComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.dataSource.data = this.dataSource.data.filter(
-          (alumnoActual) =>
-            alumnoActual.numeroDocumentoAlumno !==
-            alumnoAEliminar.numeroDocumentoAlumno
-        );
+         this.inscripcionService.eliminarInscripcion(alumnoAEliminar)
+        //  this.dataSource.data = this.dataSource.data.filter(
+        //    (alumnoActual) =>
+        //      alumnoActual.numeroDocumentoAlumno !==
+        //      alumnoAEliminar.numeroDocumentoAlumno
+        //  );
       }
     });
   }

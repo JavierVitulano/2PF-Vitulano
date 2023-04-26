@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Inscripcion } from '../inscripciones.component';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, take } from 'rxjs';
 
 
 @Injectable({
@@ -265,9 +265,45 @@ export class InscripcionService {
     //return this.cursosService.obtenerCursoPorId('1');
   }
   inscribirAlumno(nuevaInscripcion: Inscripcion) {
-    this.inscripcion$ = new BehaviorSubject<Inscripcion[]>([
-      { ...nuevaInscripcion },
-      ...this.inscripcion$.value,
-    ]);
+    // this.inscripcion$ = new BehaviorSubject<Inscripcion[]>([
+    //   { ...nuevaInscripcion },
+    //   ...this.inscripcion$.value,
+    // ]);
+
+    this.inscripcion$
+    .pipe(
+      take(1)
+    )
+    .subscribe({
+      next: (inscripciones) => {
+        this.inscripcion$.next([         
+          nuevaInscripcion
+          ,
+          ...inscripciones,
+        ]);
+      },
+    });
   }
+
+  eliminarInscripcion(inscripcionAEliminar: Inscripcion) {
+    // this.inscripcion$ = new BehaviorSubject<Inscripcion[]>([
+    //   ...this.inscripcion$.value.filter(
+    //     (inscripcion) => inscripcion.numeroDocumentoAlumno != inscripcionAEliminar.numeroDocumentoAlumno
+    //     && inscripcion.idCurso !=inscripcionAEliminar.idCurso
+    //   ),
+    // ]);
+
+    this.inscripcion$
+    .pipe(
+      take(1)
+    )
+    .subscribe({
+      next: (alumnos) => {
+        const calumnosActualizados = alumnos.filter((inscripcion) => inscripcion.numeroDocumentoAlumno != inscripcionAEliminar.numeroDocumentoAlumno
+        && inscripcion.idCurso !=inscripcionAEliminar.idCurso)
+        this.inscripcion$.next(calumnosActualizados);
+      },
+    });
+  }
+ 
 }

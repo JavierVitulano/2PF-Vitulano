@@ -35,15 +35,13 @@ export class AbmCursosComponent implements OnInit {
 
   guardar(): void {
     if (this.cursosForms.valid) {
-      console.log('valido');
       this.dialogRef.close(this.cursosForms.value);
     } else {
-      console.log('invalido');
       this.cursosForms.markAllAsTouched();
     }
   }
 
   ngOnInit() {
-    console.log(this.data);
+   // console.log(this.data);
   }
 }

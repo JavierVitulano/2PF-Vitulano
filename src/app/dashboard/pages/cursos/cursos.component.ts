@@ -66,9 +66,10 @@ export class CursosComponent implements AfterViewInit {
     });
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.dataSource.data = this.dataSource.data.filter(
-          (cursoActual) => cursoActual.id !== cursoAEliminar.id
-        );
+        this.cursosService.eliminarCurso(cursoAEliminar);
+        // this.dataSource.data = this.dataSource.data.filter(
+        //   (cursoActual) => cursoActual.id !== cursoAEliminar.id
+        // );
       }
     });
   }
@@ -80,11 +81,12 @@ export class CursosComponent implements AfterViewInit {
     });
     dialog.afterClosed().subscribe((valorDelFormulario) => {
       if (valorDelFormulario) {
-        this.dataSource.data = this.dataSource.data.map((cursoActual) =>
-          cursoActual.id === cursoAEditar.id
-            ? { ...cursoActual, ...valorDelFormulario } // { nombre: 'xxxxxx', apellido: 'xxxxx' }
-            : cursoActual
-        );
+         this.cursosService.editarCurso(cursoAEditar.id,valorDelFormulario);
+        // this.dataSource.data = this.dataSource.data.map((cursoActual) =>
+        //   cursoActual.id === cursoAEditar.id
+        //     ? { ...cursoActual, ...valorDelFormulario }
+        //     : cursoActual
+        // );
       }
     });
   }
@@ -93,10 +95,11 @@ export class CursosComponent implements AfterViewInit {
     const dialog = this.matDialog.open(AbmCursosComponent);
     dialog.afterClosed().subscribe((valor) => {
       if (valor) {
-        this.dataSource.data = [
-          { id: this.dataSource.data.length + 1, ...valor },
-          ...this.dataSource.data,
-        ];
+        this.cursosService.crearCurso(valor);
+        // this.dataSource.data = [
+        //   { id: this.dataSource.data.length + 1, ...valor },
+        //   ...this.dataSource.data,
+        // ];
       }
     });
   }

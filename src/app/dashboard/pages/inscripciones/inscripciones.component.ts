@@ -169,12 +169,13 @@ export class InscripcionesComponent {
     });
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.dataSourceInscripcion.data =
-          this.dataSourceInscripcion.data.filter(
-            (alumnoActual) =>
-              alumnoActual.numeroDocumentoAlumno !==
-              alumnoAEliminar.numeroDocumentoAlumno
-          );
+        this.inscripcionService.eliminarInscripcion(alumnoAEliminar);
+        // this.dataSourceInscripcion.data =
+        //   this.dataSourceInscripcion.data.filter(
+        //     (alumnoActual) =>
+        //       alumnoActual.numeroDocumentoAlumno !==
+        //       alumnoAEliminar.numeroDocumentoAlumno
+        //   );
       }
     });
   }

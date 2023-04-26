@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, take } from 'rxjs';
 import { Curso } from '../cursos.component';
 
 @Injectable({
@@ -85,4 +85,64 @@ export class CursosService {
       .asObservable()
       .pipe(map((cursos) => cursos.find((a) => a.id === id)));
   }
+
+  eliminarCurso(cursoAEliminar: Curso) {
+    this.cursos$
+    .pipe(
+      take(1)
+    )
+    .subscribe({
+      next: (cursos) => {
+        const calumnosActualizados = cursos.filter((curso) => curso.id != cursoAEliminar.id
+        )
+        this.cursos$.next(calumnosActualizados);
+      },
+    });
+  }
+  crearCurso(nuevoCurso: Curso) {
+    this.cursos$
+    .pipe(
+      take(1)
+    )
+    .subscribe({
+      next: (cursos) => {
+        this.cursos$.next([         
+          {
+            id: cursos.length + 1,
+            nombreCurso: nuevoCurso.nombreCurso,
+            fechaInicio: nuevoCurso.fechaInicio,
+            fechaFin: nuevoCurso.fechaFin
+          },
+          ...cursos,
+        ]);
+      },
+      complete: () => {},
+      error: () => {}
+    });
+
+  }
+  editarCurso(cursoId: number, actualizacion: Partial<Curso>): Observable<Curso[]> {
+    this.cursos$
+      .pipe(
+        take(1),
+      )
+       .subscribe({
+         next: (cursos) => {
+           const cursosActualizados = cursos.map((curso) => {
+             if (curso.id === cursoId) {
+               return {
+                 ...curso,
+                 ...actualizacion,
+               }
+             } else {
+               return curso;
+             }
+           })
+
+           this.cursos$.next(cursosActualizados);
+         },
+       });  
+       return this.cursos$.asObservable();
+      }
+      
 }

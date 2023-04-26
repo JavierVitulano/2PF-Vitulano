@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, take } from 'rxjs';
 import { Alumno } from '../alumnos.component';
 
 @Injectable({
@@ -130,18 +130,65 @@ export class AlumnosService {
   }
 
   crearAlumno(nuevoAlumno: Alumno) {
-    this.estudiantes$ = new BehaviorSubject<Alumno[]>([
-      { ...nuevoAlumno, fechaDeAlta: new Date() },
-      ...this.estudiantes$.value,
-    ]);
+    // this.estudiantes$ = new BehaviorSubject<Alumno[]>([
+    //   { ...nuevoAlumno, fechaDeAlta: new Date() },
+    //   ...this.estudiantes$.value,
+    // ]);
+
+    this.estudiantes$
+    .pipe(
+      take(1)
+    )
+    .subscribe({
+      next: (alumnos) => {
+        this.estudiantes$.next([         
+          nuevoAlumno
+          ,
+          ...alumnos,
+        ]);
+      },
+    });
   }
 
   eliminarAlumno(alumnoAEliminar: Alumno) {
-    this.estudiantes$ = new BehaviorSubject<Alumno[]>([
-      ...this.estudiantes$.value.filter(
-        (alumno) => alumno.numeroDocumento != alumnoAEliminar.numeroDocumento
-      ),
-    ]);
+    // this.estudiantes$ = new BehaviorSubject<Alumno[]>([
+    //   ...this.estudiantes$.value.filter(
+    //     (alumno) => alumno.numeroDocumento != alumnoAEliminar.numeroDocumento
+    //   ),
+    // ]);
 
+    this.estudiantes$
+    .pipe(
+      take(1)
+    )
+    .subscribe({
+      next: (alumnos) => {
+        const calumnosActualizados = alumnos.filter((alumno) => alumno.numeroDocumento !== alumnoAEliminar.numeroDocumento)
+        this.estudiantes$.next(calumnosActualizados);
+      },
+    });
   }
+  editarAlumno(alumnoId: number, actualizacion: Partial<Alumno>): Observable<Alumno[]> {
+    this.estudiantes$
+      .pipe(
+        take(1),
+      )
+       .subscribe({
+         next: (alumnos) => {
+           const alumnoActualizados = alumnos.map((alumno) => {
+             if (alumno.numeroDocumento === alumnoId) {
+               return {
+                 ...alumno,
+                 ...actualizacion,
+               }
+             } else {
+               return alumno;
+             }
+           })
+
+           this.estudiantes$.next(alumnoActualizados);
+         },
+       });  
+       return this.estudiantes$.asObservable();
+      }  
 }

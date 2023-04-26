@@ -61,11 +61,12 @@ export class AlumnosComponent implements AfterViewInit {
     const dialog = this.matDialog.open(AbmAlumnosComponent);
     dialog.afterClosed().subscribe((valor) => {
       if (valor) {
-        this.dataSource.data = [
-          { ...valor, fechaDeAlta: new Date() },
-          ...this.dataSource.data,
-          ,
-        ];
+        this.alumnosService.crearAlumno(valor);
+        // this.dataSource.data = [
+        //   { ...valor, fechaDeAlta: new Date() },
+        //   ...this.dataSource.data,
+        //   ,
+        // ];
       }
     });
   }
@@ -83,10 +84,11 @@ export class AlumnosComponent implements AfterViewInit {
     });
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.dataSource.data = this.dataSource.data.filter(
-          (alumnoActual) =>
-            alumnoActual.numeroDocumento !== alumnoAEliminar.numeroDocumento
-        );
+        this.alumnosService.eliminarAlumno(alumnoAEliminar);
+        // this.dataSource.data = this.dataSource.data.filter(
+        //   (alumnoActual) =>
+        //     alumnoActual.numeroDocumento !== alumnoAEliminar.numeroDocumento
+        // );
       }
     });
   }
@@ -99,11 +101,12 @@ export class AlumnosComponent implements AfterViewInit {
     });
     dialog.afterClosed().subscribe((valorDelFormulario) => {
       if (valorDelFormulario) {
-        this.dataSource.data = this.dataSource.data.map((alumnoActual) =>
-          alumnoActual.numeroDocumento === alumnoAEditar.numeroDocumento
-            ? { ...alumnoActual, ...valorDelFormulario } 
-            : alumnoActual
-        );
+        this.alumnosService.editarAlumno(alumnoAEditar.numeroDocumento,valorDelFormulario);
+        // this.dataSource.data = this.dataSource.data.map((alumnoActual) =>
+        //   alumnoActual.numeroDocumento === alumnoAEditar.numeroDocumento
+        //     ? { ...alumnoActual, ...valorDelFormulario } 
+        //     : alumnoActual
+        // );
       }
     });
   }

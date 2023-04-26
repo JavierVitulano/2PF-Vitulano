@@ -46,10 +46,8 @@ export class AbmAlumnosComponent implements OnInit {
 
   guardar(): void {
     if (this.alumnosForms.valid) {
-      console.log('valido');
       this.dialogRef.close(this.alumnosForms.value);
     } else {
-      console.log('invalido');
       this.alumnosForms.markAllAsTouched();
     }
   }
