@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { Curso } from '../cursos/cursos.component';
 import { CursosService } from '../cursos/Services/cursos.service';
@@ -29,7 +29,7 @@ export interface Inscripcion {
   styleUrls: ['./inscripciones.component.scss'],
 })
 export class InscripcionesComponent {
-  dataSourceInscripcion = new MatTableDataSource<Inscripcion>();
+  dataSourceInscripcion = new MatTableDataSource();
 
   displayedColumns: string[] = [
     'nombreCurso',
@@ -40,6 +40,9 @@ export class InscripcionesComponent {
     'numeroDocumento',
     'opcionesDelete',
   ];
+
+  inscripcionSuscription: Subscription | null = null;
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSourceInscripcion.filter = filterValue.trim().toLowerCase();
@@ -77,9 +80,9 @@ export class InscripcionesComponent {
       this.dataSourceCurso.data = curso;
     });
 
-    this.inscripcionService.obtenerAlumnos().subscribe((inscripcion) => {
-      this.dataSourceInscripcion.data = inscripcion;
-    });
+    //this.inscripcionService.obtenerAlumnos().subscribe((inscripcion) => {
+    //  this.dataSourceInscripcion.data = inscripcion;
+    //});
 
     this.filteredCursos = this.nombreCursoControl.valueChanges.pipe(
       startWith(''),
@@ -100,6 +103,16 @@ export class InscripcionesComponent {
           : this.dataSourceAlumno.data.slice()
       )
     );
+  }
+  ngOnDestroy(): void {
+    this.inscripcionSuscription?.unsubscribe();
+  }
+  ngOnInit(): void {
+    this.inscripcionSuscription = this.inscripcionService.obtenerInscripcion().subscribe({
+      next: (inscripciones) => {
+        this.dataSourceInscripcion.data = inscripciones;
+      },
+    });
   }
 
   private _filteredCursos(value: string): Curso[] {

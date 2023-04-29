@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
   declarations: [
     LoginComponent
   ],
+  
   imports: [
     CommonModule,
     ReactiveFormsModule,

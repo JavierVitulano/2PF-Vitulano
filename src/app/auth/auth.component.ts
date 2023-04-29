@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./auth.component.scss']
 })
 export class AuthComponent {
-constructor( private router: Router){
-  this.router.navigate(['auth','login'])
+constructor(){
+ // this.router.navigate(['auth','login'])
 }
 }

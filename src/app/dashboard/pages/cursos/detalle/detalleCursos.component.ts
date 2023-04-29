@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { InscripcionService } from '../../inscripciones/Services/inscripcion.service';
@@ -23,10 +23,10 @@ export class DetalleCursosComponent {
     'opcionesDelete',
   ];
   curso: Curso | undefined;
-  dataSource = new MatTableDataSource<Inscripcion>;
+  dataSource = new MatTableDataSource<Inscripcion>();
   //inscripcion: Inscripcion;
   private destroyed$ = new Subject();
-
+ inscripcionSuscription: Subscription | null = null;
   nombreCursoControl = new FormControl();
 
   cursosDetalleForms = new FormGroup({
@@ -38,23 +38,30 @@ export class DetalleCursosComponent {
     private inscripcionService: InscripcionService,
     private matDialog: MatDialog
   ) {
-    this.cursosService
-      .obtenerCursoPorId(parseInt(this.activatedRoute.snapshot.params['id']))
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((curso) => (this.curso = curso));
-      if (this.curso){
-    this.nombreCursoControl.setValue(this.curso?.nombreCurso);
-     this.inscripcionService
-    .obtenerAlumnosPorCurso(this.curso.id)
-    .subscribe((inscripciones) => {
-      this.dataSource.data = inscripciones;
-    });}
+     this.cursosService
+       .obtenerCursoPorId(parseInt(this.activatedRoute.snapshot.params['id']))
+       .pipe(takeUntil(this.destroyed$))
+       .subscribe((curso) => (this.curso = curso));
+       if (this.curso){
+     this.nombreCursoControl.setValue(this.curso?.nombreCurso);
+      this.inscripcionService
+     .obtenerAlumnosPorCurso(this.curso.id)
+     .subscribe((inscripciones) => {
+       this.dataSource.data = inscripciones;
+     });}
   }
 
   ngOnDestroy(): void {
     this.destroyed$.next(true);
+    this.inscripcionSuscription?.unsubscribe();
   }
-
+  ngOnInit(): void {
+    this.inscripcionSuscription = this.inscripcionService.obtenerAlumnosPorCurso(parseInt(this.activatedRoute.snapshot.params['nroDocumento'])).subscribe({
+      next: (alumnos) => {
+        this.dataSource.data = alumnos;
+      },
+    });
+  }
   eliminar(alumnoAEliminar: Inscripcion): void {
     const dialogRef = this.matDialog.open(DialogConfirmacionComponent, {
       data: {

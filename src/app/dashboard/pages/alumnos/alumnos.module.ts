@@ -13,6 +13,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AlumnosService } from './Services/alumnos.service';
 import { DetalleAlumnosComponent } from './detalle/detalleAlumnos.component';
+import { AlumnosRoutingModule } from './alumnos-routing.module';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { DetalleAlumnosComponent } from './detalle/detalleAlumnos.component';
     MatButtonModule,
     MatDialogModule,
     ReactiveFormsModule,
+    AlumnosRoutingModule
   ],
   exports: [AlumnosComponent],
 })

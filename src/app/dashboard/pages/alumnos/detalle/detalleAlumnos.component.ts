@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Alumno } from '../alumnos.component';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { AlumnosService } from '../Services/alumnos.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -25,8 +25,8 @@ export class DetalleAlumnosComponent implements OnInit {
   dataSource = new MatTableDataSource<Inscripcion>();
 
   alumno: Alumno | undefined;
-  inscripcion: any;
-
+  //inscripcion: any;
+  inscripcionSuscription: Subscription | null = null;
   private destroyed$ = new Subject();
 
   nombreControl = new FormControl();
@@ -46,30 +46,38 @@ export class DetalleAlumnosComponent implements OnInit {
     private inscripcionService: InscripcionService,
     private matDialog: MatDialog
   ) {
-    this.alumnosService
-      .obtenerAlumnoPorId(
-        parseInt(this.activatedRoute.snapshot.params['nroDocumento'])
-      )
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((alumno) => (this.alumno = alumno));
-    this.nombreControl.setValue(this.alumno?.nombre);
-    this.apellidoControl.setValue(this.alumno?.apellido);
-    this.emailControl.setValue(this.alumno?.email);
-    this.nroDocumentoControl.setValue(this.alumno?.numeroDocumento);
+     this.alumnosService
+       .obtenerAlumnoPorId(
+         parseInt(this.activatedRoute.snapshot.params['nroDocumento'])
+       )
+       .pipe(takeUntil(this.destroyed$))
+       .subscribe((alumno) => (this.alumno = alumno));
+     this.nombreControl.setValue(this.alumno?.nombre);
+     this.apellidoControl.setValue(this.alumno?.apellido);
+     this.emailControl.setValue(this.alumno?.email);
+     this.nroDocumentoControl.setValue(this.alumno?.numeroDocumento);
 
-    if (this.alumno) {
-      this.inscripcionService
-        .obtenerCursosDeAlumno(this.alumno.numeroDocumento)
-        .subscribe((inscripciones) => {
-          this.dataSource.data = inscripciones;
-        });
-    }
+      if (this.alumno) {
+        this.inscripcionService
+          //.obtenerCursosDeAlumno(this.alumno.numeroDocumento)
+          .obtenerAlumnos()
+          .subscribe((inscripciones) => {
+            this.dataSource.data = inscripciones;
+          });
+      }
   }
 
   ngOnDestroy(): void {
-    this.destroyed$.next(true);
+   this.destroyed$.next(true);
+   this.inscripcionSuscription?.unsubscribe();
   }
-  async ngOnInit() {}
+   ngOnInit(): void {
+    this.inscripcionSuscription = this.inscripcionService.obtenerAlumnosPorCurso(parseInt(this.activatedRoute.snapshot.params['id'])).subscribe({
+      next: (cursos) => {
+        this.dataSource.data = cursos;
+      },
+    }); 
+  }
 
   eliminar(alumnoAEliminar: Inscripcion): void {
     const dialogRef = this.matDialog.open(DialogConfirmacionComponent, {

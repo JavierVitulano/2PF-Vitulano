@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogConfirmacionComponent } from 'src/app/shared/dialog/dialog-confirmacion/dialog-confirmacion.component';
 import { AlumnosService } from './Services/alumnos.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 export interface Alumno {
   nombre: string;
@@ -24,7 +25,7 @@ export interface Alumno {
   styleUrls: ['./alumnos.component.scss'],
 })
 export class AlumnosComponent implements AfterViewInit {
-  dataSource = new MatTableDataSource<Alumno>();
+  dataSource = new MatTableDataSource();
 
   displayedColumns: string[] = [
     'nombreCompleto',
@@ -46,17 +47,30 @@ export class AlumnosComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
+
+  alumnosSuscription: Subscription | null = null;
+  
   constructor(
     private matDialog: MatDialog,
     private alumnosService: AlumnosService,
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {
-    this.alumnosService.obtenerAlumnos().subscribe((alumnos) => {
-      this.dataSource.data = alumnos;
-    });
+    // this.alumnosService.obtenerAlumnos().subscribe((alumnos) => {
+    //   this.dataSource.data = alumnos;
+    // });
+  }
+  ngOnDestroy(): void {
+    this.alumnosSuscription?.unsubscribe();
   }
 
+  ngOnInit(): void {
+    this.alumnosSuscription = this.alumnosService.obtenerAlumnos().subscribe({
+      next: (alumnos) => {
+        this.dataSource.data = alumnos;
+      },
+    });
+  }
   abrirABMAlumnos(): void {
     const dialog = this.matDialog.open(AbmAlumnosComponent);
     dialog.afterClosed().subscribe((valor) => {
@@ -72,6 +86,7 @@ export class AlumnosComponent implements AfterViewInit {
   }
 
   eliminar(alumnoAEliminar: Alumno): void {
+    alumnoAEliminar={...alumnoAEliminar,fechaDeAlta: new Date()}
     const dialogRef = this.matDialog.open(DialogConfirmacionComponent, {
       data: {
         message:

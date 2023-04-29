@@ -15,6 +15,7 @@ import { authModule } from 'src/app/auth/auth.module';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { DetalleCursosComponent } from './detalle/detalleCursos.component';
+import { CursosRoutingModule } from './cursos-routing.module';
 
 @NgModule({
   declarations: [CursosComponent, AbmCursosComponent, DetalleCursosComponent],
@@ -28,10 +29,11 @@ import { DetalleCursosComponent } from './detalle/detalleCursos.component';
     MatIconModule,
     MatButtonModule,
     ReactiveFormsModule,
-    authModule,
+    //authModule,
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    CursosRoutingModule
   ],
   exports: [CursosComponent],
 })

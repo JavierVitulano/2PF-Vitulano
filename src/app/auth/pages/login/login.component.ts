@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, fromEvent,map } from 'rxjs';
-import { Usuario } from 'src/app/interfaces/Usuario';
-import { AuthService } from 'src/app/auth/services/AuthService';
+import { AuthService, LoginFormValue } from 'src/app/auth/services/AuthService';
+import { Usuario } from 'src/app/core/models';
 //import { AuthService } from 'src/app/auth/services/AuthService';
 
 @Component({
@@ -11,31 +11,31 @@ import { AuthService } from 'src/app/auth/services/AuthService';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   hide = true;
-  isLoggedIn = new Subject<Usuario>();
+  //isLoggedIn = new Subject<Usuario>();
 
-  contrasenaControl = new FormControl('', [
+  passwordControl = new FormControl('', [
     Validators.required,
     Validators.minLength(8),
     Validators.maxLength(20),
   ]);
-  nombreControl = new FormControl('', [
+  emailControl = new FormControl('', [
     Validators.required,
     Validators.minLength(2),
-    Validators.maxLength(20),
+    Validators.maxLength(30),
   ]);
 
-  authForm = new FormGroup({
-    contraseña: this.contrasenaControl,
-    nombre: this.nombreControl,
+  loginForm = new FormGroup({
+    password: this.passwordControl,
+    email: this.emailControl,
   });
 
-  constructor(private authService: AuthService,
-    private router: Router) {}
-    
-    async ngOnInit() {
+  constructor(private authService: AuthService, private activatedRoute: ActivatedRoute) {
+    console.log(this.activatedRoute.snapshot);
     }
+    
+
   // async ngOnInit(): Promise<void> {
   //   const clicks = fromEvent<PointerEvent>(document, 'click');
   //   const positions = clicks.pipe(map((ev) => ev.clientX));
@@ -43,9 +43,11 @@ export class LoginComponent implements OnInit {
   //   positions.subscribe((x) => console.log(x));
   // }
   login(): void {
-    this.authService.login({
-      ...(this.authForm.value as any),
-    });
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+    } else {
+      this.authService.login(this.loginForm.value as LoginFormValue)
+    }
 
     // const obtenerUsuario = new Promise((resolve, reject) => {
     //   if (this.nombreControl.value == 'Javier') {
@@ -62,10 +64,10 @@ export class LoginComponent implements OnInit {
     //     console.log('Se logueo un otro usuario');
     //   }
     // );
-    this.router.navigate(['dashboard'])
+    //this.router.navigate(['dashboard'])
   }
   ngOnDestroy(): void {
     // this.suscripcionAuthUser?.unsubscribe();
-    this.isLoggedIn.complete();
+    //this.isLoggedIn.complete();
   }
 }

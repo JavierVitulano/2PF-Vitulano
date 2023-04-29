@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AbmCursosComponent } from './abm-cursos/abm-cursos.component';
 import { CursosService } from './Services/cursos.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 export interface Curso {
   id: number;
@@ -23,7 +24,7 @@ export interface Curso {
   styleUrls: ['./cursos.component.scss'],
 })
 export class CursosComponent implements AfterViewInit {
-  dataSource = new MatTableDataSource<Curso>();
+  dataSource = new MatTableDataSource();
 
   displayedColumns: string[] = [
     'id',
@@ -34,6 +35,7 @@ export class CursosComponent implements AfterViewInit {
     'opcionesEdit',
     'opcionesDetalle',
   ];
+  cursosSuscription: Subscription | null = null;
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -51,8 +53,26 @@ export class CursosComponent implements AfterViewInit {
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {
-    this.cursosService.obtenerCurso().subscribe((cursos) => {
-      this.dataSource.data = cursos;
+    // this.cursosService.obtenerCurso().subscribe((cursos) => {
+    //   this.dataSource.data = cursos;
+    // });
+
+    // this.cursosSuscription = this.cursosService.obtenerCursos().subscribe({
+    //   next: (cursos) => {
+    //     this.dataSource.data = cursos;
+    //   },
+    // });
+  }
+
+  ngOnDestroy(): void {
+    this.cursosSuscription?.unsubscribe();
+  }
+
+  ngOnInit(): void {
+    this.cursosSuscription = this.cursosService.obtenerCurso().subscribe({
+      next: (cursos) => {
+        this.dataSource.data = cursos;
+      },
     });
   }
   eliminar(cursoAEliminar: Curso): void {

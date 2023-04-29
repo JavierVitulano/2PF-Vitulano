@@ -5,13 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { dashboardComponent } from './dashboard.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { AlumnosModule } from '../dashboard/pages/alumnos/alumnos.module';
-import { LoginModule } from '../auth/pages/login/login.module';
-import { CursosModule } from '../dashboard/pages/cursos/cursos.module';
 import { InscripcionesModule } from '../dashboard/pages/inscripciones/inscripciones.module';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { authModule } from '../auth/auth.module';
+import { DashboardRoutingModule } from './dashboard-routing.module';
+
+
 
 @NgModule({
   declarations: [dashboardComponent],
@@ -21,13 +21,14 @@ import { authModule } from '../auth/auth.module';
     MatIconModule,
     MatButtonModule,
     MatSidenavModule,
-    AlumnosModule,
+    //AlumnosModule,
     //LoginModule,
-    CursosModule,
+    //CursosModule,
     InscripcionesModule,
     RouterModule,
     MatListModule,
-    authModule,
+    //authModule,
+    DashboardRoutingModule
   ],
   exports: [dashboardComponent],
 })

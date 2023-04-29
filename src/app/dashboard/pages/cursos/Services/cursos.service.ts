@@ -1,83 +1,27 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, take } from 'rxjs';
+import { BehaviorSubject, Observable, map, mergeMap, take, tap } from 'rxjs';
 import { Curso } from '../cursos.component';
+import { HttpClient } from '@angular/common/http';
+import { enviroment } from 'src/environments/environments';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CursosService {
-  private cursos$ = new BehaviorSubject<Curso[]>([
-    {
-      id: 1,
-      nombreCurso: 'Angular',
-      fechaInicio: new Date('01/01/2023'),
-      fechaFin: new Date('03/03/2023'),
-    },
-    {
-      id: 2,
-      nombreCurso: 'Data Analytics',
-      fechaInicio: new Date('01/01/2023'),
-      fechaFin: new Date('03/03/2023'),
-    },
-    {
-      id: 3,
-      nombreCurso: 'Data Scientist',
-      fechaInicio: new Date('01/01/2023'),
-      fechaFin: new Date('03/03/2023'),
-    },
-    {
-      id: 4,
-      nombreCurso: 'Desarrollo Frontend React',
-      fechaInicio: new Date('03/03/2023'),
-      fechaFin: new Date('06/06/2023'),
-    },
-    {
-      id: 5,
-      nombreCurso: 'Desarrollo UX/UI',
-      fechaInicio: new Date('03/03/2023'),
-      fechaFin: new Date('06/06/2023'),
-    },
-    {
-      id: 6,
-      nombreCurso: 'Diseño UX Research',
-      fechaInicio: new Date('03/03/2023'),
-      fechaFin: new Date('06/06/2023'),
-    },
-    {
-      id: 7,
-      nombreCurso: 'Java script',
-      fechaInicio: new Date('06/06/2023'),
-      fechaFin: new Date('09/09/2023'),
-    },
-    {
-      id: 8,
-      nombreCurso: 'Marketing Digital',
-      fechaInicio: new Date('06/06/2023'),
-      fechaFin: new Date('09/09/2023'),
-    },
-    {
-      id: 9,
-      nombreCurso: 'Product Design',
-      fechaInicio: new Date('06/06/2023'),
-      fechaFin: new Date('09/09/2023'),
-    },
-    {
-      id: 10,
-      nombreCurso: 'Product Web',
-      fechaInicio: new Date('09/09/2023'),
-      fechaFin: new Date('12/12/2023'),
-    },
-    {
-      id: 11,
-      nombreCurso: 'Programación WEB',
-      fechaInicio: new Date('09/09/2023'),
-      fechaFin: new Date('12/12/2023'),
-    },
-  ]);
-  constructor() {}
+  private cursos$ = new BehaviorSubject<Curso[]>([]);
 
-  obtenerCurso(): Observable<Curso[]> {
+  constructor(private httpClient: HttpClient) {}
+
+  get cursos(): Observable<Curso[]> {
     return this.cursos$.asObservable();
+  }
+  obtenerCurso(): Observable<Curso[]> {
+    //return this.cursos$.asObservable();
+    return this.httpClient.get<Curso[]>(`${enviroment.apiBaseUrl}/cursos`)
+    .pipe(
+      tap((cursos) => this.cursos$.next(cursos)),
+      mergeMap(() => this.cursos$.asObservable())
+    );
   }
 
   obtenerCursoPorId(id: number): Observable<Curso | undefined> {
@@ -86,7 +30,7 @@ export class CursosService {
       .pipe(map((cursos) => cursos.find((a) => a.id === id)));
   }
 
-  eliminarCurso(cursoAEliminar: Curso) {
+  eliminarCurso(cursoAEliminar: Curso): Observable<Curso[]> {
     this.cursos$.pipe(take(1)).subscribe({
       next: (cursos) => {
         const calumnosActualizados = cursos.filter(
@@ -95,8 +39,9 @@ export class CursosService {
         this.cursos$.next(calumnosActualizados);
       },
     });
+    return this.cursos$.asObservable();
   }
-  crearCurso(nuevoCurso: Curso) {
+  crearCurso(nuevoCurso: Curso) : Observable<Curso[]> {
     this.cursos$.pipe(take(1)).subscribe({
       next: (cursos) => {
         this.cursos$.next([
@@ -112,27 +57,29 @@ export class CursosService {
       complete: () => {},
       error: () => {},
     });
+    return this.cursos$.asObservable();
   }
   editarCurso(
     cursoId: number,
     actualizacion: Partial<Curso>
   ): Observable<Curso[]> {
-    this.cursos$.pipe(take(1)).subscribe({
-      next: (cursos) => {
-        const cursosActualizados = cursos.map((curso) => {
-          if (curso.id === cursoId) {
-            return {
-              ...curso,
-              ...actualizacion,
-            };
-          } else {
-            return curso;
-          }
-        });
+     this.cursos$.pipe(take(1))
+    .subscribe({
+       next: (cursos) => {
+         const cursosActualizados = cursos.map((curso) => {
+           if (curso.id === cursoId) {
+             return {
+               ...curso,
+               ...actualizacion,
+             };
+           } else {
+             return curso;
+           }
+         });
 
-        this.cursos$.next(cursosActualizados);
-      },
-    });
+         this.cursos$.next(cursosActualizados);
+       },
+     });
     return this.cursos$.asObservable();
   }
 }

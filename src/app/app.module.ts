@@ -5,6 +5,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { dashboardModule } from './dashboard/dashboard.module';
 import { AppRoutingModule } from './app-routing.module';
 import { authModule } from './auth/auth.module';
+import { MatNativeDateModule } from '@angular/material/core';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { authModule } from './auth/auth.module';
     BrowserAnimationsModule,
     dashboardModule,
     AppRoutingModule,
-    authModule
+    authModule,
+    MatNativeDateModule, 
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
