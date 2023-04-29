@@ -72,11 +72,16 @@ export class DetalleAlumnosComponent implements OnInit {
    this.inscripcionSuscription?.unsubscribe();
   }
    ngOnInit(): void {
-    this.inscripcionSuscription = this.inscripcionService.obtenerAlumnosPorCurso(parseInt(this.activatedRoute.snapshot.params['id'])).subscribe({
-      next: (cursos) => {
-        this.dataSource.data = cursos;
+    // this.inscripcionSuscription = this.inscripcionService.obtenerAlumnosPorCurso(parseInt(this.activatedRoute.snapshot.params['id'])).subscribe({
+    //   next: (cursos) => {
+    //     this.dataSource.data = cursos;
+    //   },
+    // }); 
+    this.inscripcionSuscription = this.inscripcionService.obtenerInscripcion().subscribe({
+      next: (inscripciones) => {
+        this.dataSource.data = inscripciones;
       },
-    }); 
+    });    
   }
 
   eliminar(alumnoAEliminar: Inscripcion): void {

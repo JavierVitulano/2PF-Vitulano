@@ -56,9 +56,15 @@ export class DetalleCursosComponent {
     this.inscripcionSuscription?.unsubscribe();
   }
   ngOnInit(): void {
-    this.inscripcionSuscription = this.inscripcionService.obtenerAlumnosPorCurso(parseInt(this.activatedRoute.snapshot.params['nroDocumento'])).subscribe({
-      next: (alumnos) => {
-        this.dataSource.data = alumnos;
+    // this.inscripcionSuscription = this.inscripcionService.obtenerAlumnosPorCurso(parseInt(this.activatedRoute.snapshot.params['nroDocumento'])).subscribe({
+    //   next: (alumnos) => {
+    //     this.dataSource.data = alumnos;
+    //   },
+    // });
+
+    this.inscripcionSuscription = this.inscripcionService.obtenerInscripcion().subscribe({
+      next: (inscripciones) => {
+        this.dataSource.data = inscripciones;
       },
     });
   }
